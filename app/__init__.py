@@ -4,10 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate  # Import Flask-Migrate
 from .config import Config
 
-
 # Initialize extensions (without attaching to app yet)
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 login_manager = LoginManager()
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
@@ -19,10 +19,10 @@ def create_app():
     login_manager.login_view = 'login'
 
     # Initialize Flask-Migrate
-    migrate = Migrate(app, db)
+    migrate.init_app(app, db)
 
+    # Import blueprints inside the function to avoid circular imports
+    from app.views import main  # Ensure this is correctly defined
     app.register_blueprint(main)
 
-    # Import and register blueprints/views inside the function
-    from app import views  
     return app
